@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "avionics-test-lab"
+version = "0.1.0"
+description = "Hands-on course: Python for test development and test architecture, using a small simulated avionics system."
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "hypothesis>=6.100", "pytest-cov>=5"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+# Lets `import avionics` work without installing the package.
+pythonpath = ["src"]
+# A bare `pytest` runs the course's own self-checks. Run a lesson with
+# `pytest lessons/01_python_for_testers` etc.
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers"]
+xfail_strict = true
+markers = [
+    "smoke: quick checks that the basics work (lesson 2)",
+    "slow: long-running tests (lesson 2)",
+    "requirement(*ids): requirement(s) verified by this test (lesson 4)",
+    "requires(capability): rig capability the test needs (lesson 4)",
+]
+
+[tool.coverage.run]
+source = ["avionics"]
+branch = true

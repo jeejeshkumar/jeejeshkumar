@@ -1,0 +1,58 @@
+# CI for the python-test-engineering course (see lesson 6 for a walk-through).
+name: python-test-engineering
+
+on:
+  push:
+    paths:
+      - "python-test-engineering/**"
+      - ".github/workflows/python-test-engineering.yml"
+  pull_request:
+    paths:
+      - "python-test-engineering/**"
+      - ".github/workflows/python-test-engineering.yml"
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    defaults:
+      run:
+        working-directory: python-test-engineering
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        run: python -m pip install -e ".[dev]"
+
+      - name: Course self-checks (solutions pass and catch every seeded bug)
+        run: python -m pytest --junitxml=reports/junit-selfcheck.xml
+
+      - name: SIL rig tests with requirements traceability
+        run: >
+          python -m pytest lessons/04_test_architecture
+          --junitxml=reports/junit-rig.xml
+          --trace-report=reports/traceability.md
+
+      - name: Coverage of the avionics package by the reference solutions
+        run: >
+          python -m pytest solutions/02_pytest_fundamentals
+          solutions/03_fixtures_and_test_doubles
+          solutions/05_property_based_testing
+          solutions/06_coverage_ci_reporting
+          --cov=avionics --cov-branch --cov-report=term-missing
+          --cov-report=xml:reports/coverage.xml
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-py${{ matrix.python-version }}
+          path: python-test-engineering/reports/

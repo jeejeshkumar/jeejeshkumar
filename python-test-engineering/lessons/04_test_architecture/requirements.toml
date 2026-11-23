@@ -1,0 +1,38 @@
+# System-level requirements for the Air Data Computer (ADC), verified on the rig.
+# Each test declares what it verifies with @pytest.mark.requirement("<id>").
+
+[SYS-ADC-010]
+title = "Altitude accuracy"
+text = """With all sensors healthy, the ADC shall transmit pressure altitude on
+label 203 with SSM = NORMAL OPERATION, within +/-25 ft of the applied pressure
+altitude, from -2 000 ft to 60 000 ft."""
+
+[SYS-ADC-020]
+title = "Label 203 update rate"
+text = """The ADC shall transmit label 203 at 20 Hz +/-10 %, with no gap between
+consecutive words longer than 75 ms."""
+
+[SYS-ADC-030]
+title = "Single sensor failure tolerance"
+text = """With any ONE pressure sensor failed, the ADC shall continue to transmit
+valid pressure altitude (SSM = NORMAL OPERATION, accuracy per SYS-ADC-010)."""
+
+[SYS-ADC-040]
+title = "Dual sensor failure annunciation"
+text = """With TWO pressure sensors failed, the ADC shall set label 203 SSM to
+FAILURE WARNING within 250 ms."""
+
+[SYS-ADC-050]
+title = "Latched failures cleared by power cycle"
+text = """Sensor failures latched by the ADC shall be cleared by removing and
+re-applying power."""
+
+[SYS-ADC-060]
+title = "Out-of-range pressure"
+text = """When the static pressure is outside the ADC's measurement range, the
+ADC shall transmit label 203 with SSM = NO COMPUTED DATA."""
+
+[SYS-ADC-070]
+title = "Power-up time"
+text = """The ADC shall transmit valid label 203 within 1.0 s of power being
+applied."""
